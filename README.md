@@ -61,6 +61,28 @@ sudo apt install xvfb
 
 ## Usage
 
+### Option 0 — Docker (recommended for servers)
+
+Build and run:
+
+```bash
+docker compose up -d --build
+```
+
+Check health:
+
+```bash
+curl http://127.0.0.1:5050/health
+```
+
+Solve request:
+
+```bash
+curl -s -X POST http://127.0.0.1:5050/solve \
+  -H "Content-Type: application/json" \
+  -d '{"sitekey":"0x4AAAAAAActoBfh_En8yr3T","siteurl":"https://example.com/"}'
+```
+
 ### Option A — Standalone solver (single token)
 
 Run `solver.py` directly from the command line:

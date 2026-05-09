@@ -1,0 +1,20 @@
+services:
+  ezsolver:
+    build: .
+    container_name: ezsolver
+    environment:
+      PORT: "5050"
+      MAX_WORKERS: "2"
+      NO_SANDBOX: "1"
+      TS_PROFILE_DIR: "/tmp/ts_profile"
+    ports:
+      - "5050:5050"
+    shm_size: "2gb"
+    user: "1000:1000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5050/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
