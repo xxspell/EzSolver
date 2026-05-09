@@ -216,6 +216,7 @@ For truly massive scale (thousands of concurrent solves), run **multiple service
 | `TS_PROFILE_DIR` | `%TEMP%\ts_profile` / `/tmp/ts_profile` | Persistent Chrome profile directory |
 | `PORT` | `8191` | Port the service listens on |
 | `MAX_WORKERS` | `4` | Max concurrent Chrome instances |
+| `NO_SANDBOX` | `1` | Pass `no_sandbox=True` to browser startup (recommended in Docker/root) |
 
 **Example:**
 ```bash

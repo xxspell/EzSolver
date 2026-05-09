@@ -69,10 +69,13 @@ def _start_xvfb_if_needed() -> Optional[subprocess.Popen]:
 
 
 async def _solve(sitekey: str, siteurl: str, timeout: int) -> str:
+    no_sandbox = os.environ.get("NO_SANDBOX", "1").strip().lower() not in {"0", "false", "no"}
+
     browser = await uc.start(
         browser_executable_path=_find_chrome(),
         headless=False,
         user_data_dir=_get_profile_dir(),
+        no_sandbox=no_sandbox,
     )
 
     try:
