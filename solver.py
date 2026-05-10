@@ -43,13 +43,26 @@ def _find_chrome() -> str:
 
 
 def _get_profile_dir() -> str:
-    """Return a persistent Chrome profile directory for the current OS."""
+    """Return a writable Chrome profile directory for the current OS."""
     if os.environ.get("TS_PROFILE_DIR"):
-        return os.environ["TS_PROFILE_DIR"]
-    if platform.system() == "Windows":
+        path = os.environ["TS_PROFILE_DIR"]
+    elif platform.system() == "Windows":
         base = os.environ.get("TEMP") or os.environ.get("TMP") or r"C:\Temp"
-        return os.path.join(base, "ts_profile")
-    return "/tmp/ts_profile"
+        path = os.path.join(base, "ts_profile")
+    else:
+        path = "/tmp/ts_profile"
+
+    try:
+        os.makedirs(path, exist_ok=True)
+        test_file = os.path.join(path, ".write_test")
+        with open(test_file, "w"):
+            pass
+        os.remove(test_file)
+        return path
+    except Exception:
+        fallback = f"/tmp/ts_profile_{os.getuid()}"
+        os.makedirs(fallback, exist_ok=True)
+        return fallback
 
 
 def _start_xvfb_if_needed() -> Optional[subprocess.Popen]:
@@ -76,6 +89,12 @@ async def _solve(sitekey: str, siteurl: str, timeout: int) -> str:
         headless=False,
         user_data_dir=_get_profile_dir(),
         no_sandbox=no_sandbox,
+        browser_args=[
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+        ] if no_sandbox else ["--disable-dev-shm-usage", "--disable-gpu"],
     )
 
     try:
