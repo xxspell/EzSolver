@@ -3,8 +3,10 @@ import json
 import os
 import platform
 import random
+import shutil
 import subprocess
 import time
+import uuid
 from typing import Optional
 """
 MADE BY ISMOILOFF. GOOD LUCK HAVE FUN, THIS IS JUST PROJECT, USE IT ON UR OWN RISKS!
@@ -42,8 +44,8 @@ def _find_chrome() -> str:
     )
 
 
-def _get_profile_dir() -> str:
-    """Return a writable Chrome profile directory for the current OS."""
+def _get_profile_base_dir() -> str:
+    """Return a writable base directory for Chrome profiles."""
     if os.environ.get("TS_PROFILE_DIR"):
         path = os.environ["TS_PROFILE_DIR"]
     elif platform.system() == "Windows":
@@ -63,6 +65,13 @@ def _get_profile_dir() -> str:
         fallback = f"/tmp/ts_profile_{os.getuid()}"
         os.makedirs(fallback, exist_ok=True)
         return fallback
+
+
+def _create_profile_dir() -> str:
+    base = _get_profile_base_dir()
+    path = os.path.join(base, f"session_{uuid.uuid4().hex}")
+    os.makedirs(path, exist_ok=True)
+    return path
 
 
 def _start_xvfb_if_needed() -> Optional[subprocess.Popen]:
@@ -90,10 +99,12 @@ async def _solve(sitekey: str, siteurl: str, timeout: int) -> str:
 
     no_sandbox = os.environ.get("NO_SANDBOX", "1").strip().lower() not in {"0", "false", "no"}
 
+    profile_dir = _create_profile_dir()
+
     browser = await uc.start(
         browser_executable_path=_find_chrome(),
         headless=False,
-        user_data_dir=_get_profile_dir(),
+        user_data_dir=profile_dir,
         no_sandbox=no_sandbox,
         browser_args=[
             "--no-sandbox",
@@ -213,6 +224,7 @@ async def _solve(sitekey: str, siteurl: str, timeout: int) -> str:
 
     finally:
         browser.stop()
+        shutil.rmtree(profile_dir, ignore_errors=True)
 
     if not token:
         raise TimeoutError(f"Turnstile token not obtained within {timeout}s")
