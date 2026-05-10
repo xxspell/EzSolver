@@ -90,7 +90,7 @@ class Handler(BaseHTTPRequestHandler):
 
         sitekey = payload.get("sitekey", "").strip()
         siteurl = payload.get("siteurl", "").strip()
-        timeout = int(payload.get("timeout", 45))
+        timeout = int(payload.get("timeout", 90))
 
         if not sitekey or not siteurl:
             self.send_json(400, {"error": "sitekey and siteurl are required"})

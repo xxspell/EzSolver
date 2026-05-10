@@ -4,7 +4,7 @@ services:
     container_name: ezsolver
     environment:
       PORT: "5050"
-      MAX_WORKERS: "2"
+      MAX_WORKERS: "1"
       NO_SANDBOX: "1"
       TS_PROFILE_DIR: "/tmp/ts_profile"
     ports:
