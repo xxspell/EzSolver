@@ -82,6 +82,12 @@ def _start_xvfb_if_needed() -> Optional[subprocess.Popen]:
 
 
 async def _solve(sitekey: str, siteurl: str, timeout: int) -> str:
+    os.environ.setdefault("HOME", "/tmp")
+    os.environ.setdefault("XDG_CONFIG_HOME", "/tmp/.config")
+    os.environ.setdefault("XDG_CACHE_HOME", "/tmp/.cache")
+    os.makedirs(os.environ["XDG_CONFIG_HOME"], exist_ok=True)
+    os.makedirs(os.environ["XDG_CACHE_HOME"], exist_ok=True)
+
     no_sandbox = os.environ.get("NO_SANDBOX", "1").strip().lower() not in {"0", "false", "no"}
 
     browser = await uc.start(
