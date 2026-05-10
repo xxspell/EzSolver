@@ -18,6 +18,7 @@ import platform
 import subprocess
 import threading
 import time
+import traceback
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
 from typing import Optional
@@ -120,6 +121,9 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as exc:
             elapsed = round(time.time() - t0, 2)
             print(f"[service] error after {elapsed}s: {exc}")
+            print("[service] traceback start")
+            print(traceback.format_exc())
+            print("[service] traceback end")
             self.send_json(500, {"error": str(exc)})
         finally:
             with _count_lock:

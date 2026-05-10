@@ -100,6 +100,10 @@ async def _solve(sitekey: str, siteurl: str, timeout: int) -> str:
     no_sandbox = os.environ.get("NO_SANDBOX", "1").strip().lower() not in {"0", "false", "no"}
 
     profile_dir = _create_profile_dir()
+    print(
+        f"[solver-debug] chrome={_find_chrome()} profile_dir={profile_dir} "
+        f"no_sandbox={no_sandbox} HOME={os.environ.get('HOME')} DISPLAY={os.environ.get('DISPLAY')}"
+    )
 
     browser = await uc.start(
         browser_executable_path=_find_chrome(),
